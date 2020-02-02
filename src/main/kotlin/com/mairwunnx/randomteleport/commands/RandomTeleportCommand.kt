@@ -39,7 +39,7 @@ object RandomTeleportCommand {
         registerAliases()
 
         val literal =
-            literal<CommandSource>("random-teleport").executes(::execute)
+            literal<CommandSource>("random-teleport")
                 .then(
                     Commands.argument(
                         "player", EntityArgument.player()
@@ -74,14 +74,28 @@ object RandomTeleportCommand {
                     )
                 )
 
-        val literalNode = dispatcher.register(literal)
-        dispatcher.register(Commands.literal("randomteleport").redirect(literalNode))
-        dispatcher.register(Commands.literal("random-tp").redirect(literalNode))
-        dispatcher.register(Commands.literal("randomtp").redirect(literalNode))
-        dispatcher.register(Commands.literal("rnd-tp").redirect(literalNode))
-        dispatcher.register(Commands.literal("rndtp").redirect(literalNode))
-        dispatcher.register(Commands.literal("rtp").redirect(literalNode))
-        dispatcher.register(Commands.literal("tpr").redirect(literalNode))
+        val literalNode = dispatcher.register(literal.executes(::execute))
+        dispatcher.register(
+            Commands.literal("randomteleport").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("random-tp").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("randomtp").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("rnd-tp").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("rndtp").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("rtp").executes(::execute).redirect(literalNode)
+        )
+        dispatcher.register(
+            Commands.literal("tpr").executes(::execute).redirect(literalNode)
+        )
     }
 
     private fun registerAliases() {
