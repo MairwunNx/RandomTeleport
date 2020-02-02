@@ -75,27 +75,13 @@ object RandomTeleportCommand {
                 )
 
         val literalNode = dispatcher.register(literal.executes(::execute))
-        dispatcher.register(
-            Commands.literal("randomteleport").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("random-tp").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("randomtp").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("rnd-tp").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("rndtp").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("rtp").executes(::execute).redirect(literalNode)
-        )
-        dispatcher.register(
-            Commands.literal("tpr").executes(::execute).redirect(literalNode)
-        )
+        aliases.forEach {
+            if (it != "random-teleport") {
+                dispatcher.register(
+                    Commands.literal(it).executes(::execute).redirect(literalNode)
+                )
+            }
+        }
     }
 
     private fun registerAliases() {
