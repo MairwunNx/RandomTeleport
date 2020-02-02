@@ -20,6 +20,7 @@ import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.Tuple
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TranslationTextComponent
+import net.minecraft.util.text.event.ClickEvent
 import net.minecraft.world.gen.Heightmap
 import net.minecraft.world.server.ServerWorld
 import org.apache.logging.log4j.LogManager
@@ -28,6 +29,7 @@ import java.util.*
 // todo: canSpawnOnTrees implement.
 // todo: max must be controlled by configuration.
 object RandomTeleportCommand {
+    val lastPlayerPosition: MutableMap<String, Position> = mutableMapOf()
     private val logger = LogManager.getLogger()
     private val random = Random()
     private val minRange = 32
@@ -96,10 +98,18 @@ object RandomTeleportCommand {
         val isPlayer = context.source.entity is ServerPlayerEntity
         val player = context.source.asPlayer()
         val playerName = context.source.asPlayer().name.string
-        val target = EntityArgument.getPlayer(context, "player")
-        val targets = EntityArgument.getPlayers(context, "players")
-        val radius = IntegerArgumentType.getInteger(context, "radius")
-        val depth = IntegerArgumentType.getInteger(context, "depth")
+        val target by lazy {
+            EntityArgument.getPlayer(context, "player")
+        }
+        val targets by lazy {
+            EntityArgument.getPlayers(context, "players")
+        }
+        val radius by lazy {
+            IntegerArgumentType.getInteger(context, "radius")
+        }
+        val depth by lazy {
+            IntegerArgumentType.getInteger(context, "depth")
+        }
 
         if (isPlayer) {
             if (EntryPoint.hasPermission(player, "teleport.random", 1)) {
@@ -229,6 +239,15 @@ object RandomTeleportCommand {
         val world = player.serverWorld
         var newPosition: Position? = null
         var locationFound = false
+        val justInCaseComponent = TranslationTextComponent(
+            "random_teleport.teleport.just_in_case"
+        )
+        justInCaseComponent.style.clickEvent = ClickEvent(
+            ClickEvent.Action.RUN_COMMAND,
+            "/bad-location"
+        )
+
+        lastPlayerPosition[player.name.string] = position
 
         if (byOther) {
             player.commandSource.sendFeedback(
@@ -275,6 +294,10 @@ object RandomTeleportCommand {
                     ), false
                 )
             }
+
+            player.commandSource.sendFeedback(
+                justInCaseComponent, false
+            )
         } else {
             if (byOther) {
                 player.commandSource.sendFeedback(
