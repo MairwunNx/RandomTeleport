@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package com.mairwunnx.randomteleport.commands
 
 import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
@@ -17,6 +19,7 @@ import net.minecraft.command.arguments.EntityArgument
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.Tuple
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.gen.Heightmap
 import net.minecraft.world.server.ServerWorld
 import org.apache.logging.log4j.LogManager
@@ -90,20 +93,160 @@ object RandomTeleportCommand {
     }
 
     private fun execute(context: CommandContext<CommandSource>): Int {
-        teleportRandomly(context.source.asPlayer(), 1)
-        return 0
+        val isPlayer = context.source.entity is ServerPlayerEntity
+        val player = context.source.asPlayer()
+        val playerName = context.source.asPlayer().name.string
+        val target = EntityArgument.getPlayer(context, "player")
+        val targets = EntityArgument.getPlayers(context, "players")
+        val radius = IntegerArgumentType.getInteger(context, "radius")
+        val depth = IntegerArgumentType.getInteger(context, "depth")
+
+        if (isPlayer) {
+            if (EntryPoint.hasPermission(player, "teleport.random", 1)) {
+                if (targetExist(context)) {
+                    if (EntryPoint.hasPermission(player, "teleport.random.other", 3)) {
+                        teleportRandomly(
+                            target,
+                            if (depthExist(context)) depth else 1,
+                            if (radiusExist(context)) radius else 10000,
+                            true,
+                            playerName
+                        )
+                        return 0
+                    } else {
+                        context.source.sendFeedback(
+                            TranslationTextComponent(
+                                "random_teleport.teleport_other.restricted"
+                            ), false
+                        )
+                        return 0
+                    }
+                }
+
+                if (targetsExist(context)) {
+                    if (EntryPoint.hasPermission(
+                            player, "teleport.random.other.multiple", 4
+                        )
+                    ) {
+                        targets.forEach {
+                            teleportRandomly(
+                                it,
+                                if (depthExist(context)) depth else 1,
+                                if (radiusExist(context)) radius else 10000,
+                                true,
+                                playerName
+                            )
+                        }
+                        return 0
+                    } else {
+                        context.source.sendFeedback(
+                            TranslationTextComponent(
+                                "random_teleport.teleport_other_multiple.restricted"
+                            ), false
+                        )
+                        return 0
+                    }
+                }
+
+                teleportRandomly(
+                    player,
+                    if (depthExist(context)) depth else 1,
+                    if (radiusExist(context)) radius else 10000
+                )
+                return 0
+            } else {
+                context.source.sendFeedback(
+                    TranslationTextComponent(
+                        "random_teleport.teleport.restricted"
+                    ), false
+                )
+                return 0
+            }
+        } else {
+            if (targetExist(context)) {
+                teleportRandomly(
+                    target,
+                    if (depthExist(context)) depth else 1,
+                    if (radiusExist(context)) radius else 10000,
+                    true, "server"
+                )
+                return 0
+            }
+
+            if (targetsExist(context)) {
+                targets.forEach {
+                    teleportRandomly(
+                        it,
+                        if (depthExist(context)) depth else 1,
+                        if (radiusExist(context)) radius else 10000,
+                        true, "server"
+                    )
+                }
+                return 0
+            }
+
+            logger.info("Only player can execute `/random-teleport` command without argument.")
+            return 0
+        }
+    }
+
+    private fun targetExist(context: CommandContext<CommandSource>): Boolean = try {
+        EntityArgument.getPlayer(context, "player")
+        true
+    } catch (ex: IllegalArgumentException) {
+        false
+    }
+
+    private fun targetsExist(context: CommandContext<CommandSource>): Boolean = try {
+        EntityArgument.getPlayers(context, "players")
+        true
+    } catch (ex: IllegalArgumentException) {
+        false
+    }
+
+    private fun radiusExist(context: CommandContext<CommandSource>): Boolean = try {
+        IntegerArgumentType.getInteger(context, "radius")
+        true
+    } catch (ex: IllegalArgumentException) {
+        false
+    }
+
+    private fun depthExist(context: CommandContext<CommandSource>): Boolean = try {
+        IntegerArgumentType.getInteger(context, "depth")
+        true
+    } catch (ex: IllegalArgumentException) {
+        false
     }
 
     private fun teleportRandomly(
-        player: ServerPlayerEntity, depth: Int
+        player: ServerPlayerEntity,
+        depth: Int,
+        radius: Int,
+        byOther: Boolean = false,
+        otherName: String = ""
     ) {
         val position = Position(player.position.x, player.position.y, player.position.z)
         val world = player.serverWorld
         var newPosition: Position? = null
         var locationFound = false
 
+        if (byOther) {
+            player.commandSource.sendFeedback(
+                TranslationTextComponent(
+                    "random_teleport.teleport.teleporting_by_other",
+                    otherName
+                ), false
+            )
+        } else {
+            player.commandSource.sendFeedback(
+                TranslationTextComponent(
+                    "random_teleport.teleport.teleporting"
+                ), false
+            )
+        }
+
         repeat(depth) {
-            val anewPosition = getRandomPosition(position)
+            val anewPosition = getRandomPosition(position, radius)
             val tuple = isSafeLocation(world, anewPosition)
             if (tuple.a) {
                 locationFound = true
@@ -118,17 +261,43 @@ object RandomTeleportCommand {
                 newPosition!!.y.toDouble(),
                 newPosition!!.z.toDouble()
             )
-            // send message success teleported
+            if (byOther) {
+                player.commandSource.sendFeedback(
+                    TranslationTextComponent(
+                        "random_teleport.teleport.success_by_other",
+                        otherName
+                    ), false
+                )
+            } else {
+                player.commandSource.sendFeedback(
+                    TranslationTextComponent(
+                        "random_teleport.teleport.success"
+                    ), false
+                )
+            }
         } else {
-            // send message failed to teleport :(
+            if (byOther) {
+                player.commandSource.sendFeedback(
+                    TranslationTextComponent(
+                        "random_teleport.teleport.failed_by_other",
+                        otherName
+                    ), false
+                )
+            } else {
+                player.commandSource.sendFeedback(
+                    TranslationTextComponent(
+                        "random_teleport.teleport.failed"
+                    ), false
+                )
+            }
         }
     }
 
-    private fun getRandomPosition(position: Position): Position {
-        val randomForX = random.nextInt(10000).let {
+    private fun getRandomPosition(position: Position, radius: Int): Position {
+        val randomForX = random.nextInt(radius).let {
             return@let if (it < minRange) minRange + it else it
         }
-        val randomForZ = random.nextInt(10000).let {
+        val randomForZ = random.nextInt(radius).let {
             return@let if (it < minRange) minRange + it else it
         }
 
