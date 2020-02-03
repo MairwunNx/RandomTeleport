@@ -21,7 +21,14 @@ object TeleportRollbackManager {
     fun commitPosition(playerName: String, position: Position) {
         logger.debug("Position $position committing for $playerName")
         purgeAll()
+        removeEntry(playerName)
         lastPosition.put(playerName, position, ZonedDateTime.now())
+    }
+
+    fun removeEntry(playerName: String) {
+        if (lastPosition.containsRow(playerName)) {
+            lastPosition.rowMap().remove(playerName)
+        }
     }
 
     /**
@@ -40,7 +47,7 @@ object TeleportRollbackManager {
         purgeAll()
 
         return try {
-            lastPosition.rowMap().remove(playerName)
+            logger.debug("Position taken for $playerName: $pos")
             pos
         } catch (ex: NoSuchElementException) {
             null
@@ -61,7 +68,11 @@ object TeleportRollbackManager {
             val duration = Duration.between(commitTime, timeNow)
             val passedSeconds = duration.toKotlinDuration().inSeconds
 
-            passedSeconds >= getTimeOut()
+            if (passedSeconds >= getTimeOut()) {
+                logger.debug("Expired entry removed for $it")
+                return@removeAll true
+            }
+            return@removeAll false
         }
     }
 

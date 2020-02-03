@@ -299,6 +299,7 @@ object RandomTeleportCommand {
                 justInCaseComponent, false
             )
         } else {
+            TeleportRollbackManager.removeEntry(player.name.string)
             if (byOther) {
                 player.commandSource.sendFeedback(
                     TranslationTextComponent(

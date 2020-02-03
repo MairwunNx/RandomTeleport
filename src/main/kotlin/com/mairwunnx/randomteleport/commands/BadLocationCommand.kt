@@ -51,6 +51,7 @@ object BadLocationCommand {
                     position.y + 0.5,
                     position.z + 0.5
                 )
+                TeleportRollbackManager.removeEntry(playerName)
             }
 
             return 0
