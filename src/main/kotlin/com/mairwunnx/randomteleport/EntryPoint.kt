@@ -1,6 +1,7 @@
 package com.mairwunnx.randomteleport
 
 import com.mairwunnx.projectessentials.permissions.permissions.PermissionsAPI
+import com.mairwunnx.randomteleport.commands.BadLocationCommand
 import com.mairwunnx.randomteleport.commands.RandomTeleportCommand
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraftforge.common.MinecraftForge
@@ -39,6 +40,7 @@ class EntryPoint {
     fun onServerStarting(it: FMLServerStartingEvent) {
         logger.info("Commands registering starting for Random Teleport.")
         RandomTeleportCommand.register(it.commandDispatcher)
+        BadLocationCommand.register(it.commandDispatcher)
     }
 
     companion object {

@@ -5,6 +5,7 @@ package com.mairwunnx.randomteleport.commands
 import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
 import com.mairwunnx.randomteleport.EntryPoint
 import com.mairwunnx.randomteleport.Position
+import com.mairwunnx.randomteleport.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
@@ -29,7 +30,6 @@ import java.util.*
 // todo: canSpawnOnTrees implement.
 // todo: max must be controlled by configuration.
 object RandomTeleportCommand {
-    val lastPlayerPosition: MutableMap<String, Position> = mutableMapOf()
     private val logger = LogManager.getLogger()
     private val random = Random()
     private val minRange = 32
@@ -247,7 +247,7 @@ object RandomTeleportCommand {
             "/bad-location"
         )
 
-        lastPlayerPosition[player.name.string] = position
+        TeleportRollbackManager.commitPosition(player.name.string, position)
 
         if (byOther) {
             player.commandSource.sendFeedback(
