@@ -40,6 +40,7 @@ object TeleportRollbackManager {
         purgeAll()
 
         return try {
+            lastPosition.rowMap().remove(playerName)
             pos
         } catch (ex: NoSuchElementException) {
             null
