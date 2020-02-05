@@ -1,7 +1,7 @@
 package com.mairwunnx.randomteleport.commands
 
 import com.mairwunnx.randomteleport.EntryPoint
-import com.mairwunnx.randomteleport.TeleportRollbackManager
+import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
 import com.mojang.brigadier.context.CommandContext

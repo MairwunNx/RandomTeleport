@@ -1,6 +1,7 @@
-package com.mairwunnx.randomteleport
+package com.mairwunnx.randomteleport.managers
 
 import com.google.common.collect.HashBasedTable
+import com.mairwunnx.randomteleport.Position
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -21,7 +22,9 @@ object TeleportRollbackManager {
     fun commitPosition(playerName: String, position: Position) {
         logger.debug("Position $position committing for $playerName")
         purgeAll()
-        removeEntry(playerName)
+        removeEntry(
+            playerName
+        )
         lastPosition.put(playerName, position, ZonedDateTime.now())
     }
 
