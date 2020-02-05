@@ -1,0 +1,15 @@
+{
+  "random_teleport.teleport.restricted": "§cYou §7don't have permission §cto teleport randomly.",
+  "random_teleport.teleport_other.restricted": "§cYou §7don't have permission §cto teleport other player randomly.",
+  "random_teleport.teleport_other_multiple.restricted": "§cYou §7don't have permission §cto teleport other players randomly.",
+  "random_teleport.teleport.just_in_case": "§4Just in case: §7if new location is not pleasant or dangerous for you: §6Return on previous location with §7/bad-location §6command or click on this message.\n            §7[ §dBACK §7]",
+  "random_teleport.teleport.rollback_restricted": "§cYou §7don't have permission §cto return on previous location.",
+  "random_teleport.teleport.expired_or_not_was_teleported": "§cLocation rollback timer expired or you already used location rollback.",
+  "random_teleport.teleport.teleporting_back": "§6Rolling back to previous location ...",
+  "random_teleport.teleport.teleporting_by_other": "§6Teleporting to random location by §7%s§6 ...",
+  "random_teleport.teleport.teleporting": "§6Teleporting to random location ...",
+  "random_teleport.teleport.success_by_other": "§6Teleported to random location by §7%s§6.",
+  "random_teleport.teleport.success": "§6Teleported to random location.",
+  "random_teleport.teleport.failed_by_other": "§cThe location found does not meet the safety standards for teleportation. Teleportation by §7%s§c has been canceled for security reasons.",
+  "random_teleport.teleport.failed": "§cThe location found does not meet the safety standards for teleportation. Teleportation has been canceled for security reasons. Try teleporting again."
+}

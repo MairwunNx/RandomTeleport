@@ -1,0 +1,15 @@
+{
+  "random_teleport.teleport.restricted": "§cУ вас §7нет прав §cчто бы телепортироваться в случайное место.",
+  "random_teleport.teleport_other.restricted": "§cУ вас §7нет прав §cчто бы телепортировать другого игрока в случайное место.",
+  "random_teleport.teleport_other_multiple.restricted": "§cУ вас §7нет прав §cчто бы телепортировать других игроков в случайное место.",
+  "random_teleport.teleport.just_in_case": "§4На всякий случай: §7если подобранная локация не нравится или опасная для вас: §6Вернитесь назад командой §7/bad-location §6или нажмите на это сообщение.\n            §7[ §dНАЗАД §7]",
+  "random_teleport.teleport.rollback_restricted": "§cУ вас §7нет прав §cчто бы вернуться на предыдущую локацию.",
+  "random_teleport.teleport.expired_or_not_was_teleported": "§cТаймер для возврата на предыдущую локацию §7истек §cили вы §7уже использовали §cтакую возможность.",
+  "random_teleport.teleport.teleporting_back": "§6Телепортация к предыдущей вашей позиции ...",
+  "random_teleport.teleport.teleporting_by_other": "§6Телепортация в случайное место по желанию §7%s§6 ...",
+  "random_teleport.teleport.teleporting": "§6Телепортация в случайное место ...",
+  "random_teleport.teleport.success_by_other": "§6Вы телепортированы в случайное место по желанию игрока §7%s§6.",
+  "random_teleport.teleport.success": "§6Вы телепортированы в случайное место.",
+  "random_teleport.teleport.failed_by_other": "§cНайденное случайное место не соответствует стандартам безопасности. Телепортация от игрока §7%s§c была отменена в целях вашей безопасности.",
+  "random_teleport.teleport.failed": "§cНайденное случайное место не соответствует стандартам безопасности. Телепортация была отменена в целях вашей безопасности. Попробуйте телепортироваться еще раз."
+}
