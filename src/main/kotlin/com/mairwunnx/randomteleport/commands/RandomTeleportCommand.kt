@@ -5,6 +5,7 @@ package com.mairwunnx.randomteleport.commands
 import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
 import com.mairwunnx.randomteleport.EntryPoint
 import com.mairwunnx.randomteleport.Position
+import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
@@ -27,12 +28,11 @@ import net.minecraft.world.server.ServerWorld
 import org.apache.logging.log4j.LogManager
 import java.util.*
 
-// todo: canSpawnOnTrees implement.
-// todo: max must be controlled by configuration.
 object RandomTeleportCommand {
     private val logger = LogManager.getLogger()
     private val random = Random()
-    private val minRange = 32
+    private val minRange
+        get() = ConfigurationManager.get().minRandomTeleportRadius
     private val aliases = arrayOf(
         "random-teleport", "randomteleport",
         "random-tp", "randomtp",

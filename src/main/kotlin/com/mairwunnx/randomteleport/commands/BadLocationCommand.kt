@@ -48,6 +48,7 @@ object BadLocationCommand {
                         "random_teleport.teleport.teleporting_back"
                     ), false
                 )
+
                 when (ConfigurationManager.get().teleportStrategy) {
                     TeleportStrategy.KEEP_LOADED -> {
                         player.teleportKeepLoaded(
