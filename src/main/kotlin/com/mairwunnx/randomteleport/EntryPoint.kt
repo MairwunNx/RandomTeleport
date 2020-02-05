@@ -25,18 +25,20 @@ class EntryPoint {
     }
 
     private fun loadAdditionalModules() {
-        try {
-            Class.forName(permissionAPIClassPath)
-            permissionsInstalled = true
-        } catch (_: ClassNotFoundException) {
-            // ignored
-        }
+        if (ConfigurationManager.get().interactWithEssentials) {
+            try {
+                Class.forName(permissionAPIClassPath)
+                permissionsInstalled = true
+            } catch (_: ClassNotFoundException) {
+                // ignored
+            }
 
-        try {
-            Class.forName(cooldownAPIClassPath)
-            cooldownInstalled = true
-        } catch (_: ClassNotFoundException) {
-            // ignored
+            try {
+                Class.forName(cooldownAPIClassPath)
+                cooldownInstalled = true
+            } catch (_: ClassNotFoundException) {
+                // ignored
+            }
         }
     }
 
