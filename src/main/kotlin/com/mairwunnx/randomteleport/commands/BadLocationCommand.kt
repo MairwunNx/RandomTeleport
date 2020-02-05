@@ -1,6 +1,8 @@
 package com.mairwunnx.randomteleport.commands
 
 import com.mairwunnx.randomteleport.EntryPoint
+import com.mairwunnx.randomteleport.configuration.TeleportStrategy
+import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
@@ -46,11 +48,41 @@ object BadLocationCommand {
                         "random_teleport.teleport.teleporting_back"
                     ), false
                 )
-                player.teleportKeepLoaded(
-                    position.x + 0.5,
-                    position.y + 0.5,
-                    position.z + 0.5
-                )
+                when (ConfigurationManager.get().teleportStrategy) {
+                    TeleportStrategy.KEEP_LOADED -> {
+                        player.teleportKeepLoaded(
+                            position.x + getCenterPosBlock(),
+                            position.y + getCenterPosBlock(),
+                            position.z + getCenterPosBlock()
+                        )
+                    }
+                    TeleportStrategy.SET_AND_UPDATE -> {
+                        player.setPositionAndUpdate(
+                            position.x + getCenterPosBlock(),
+                            position.y + getCenterPosBlock(),
+                            position.z + getCenterPosBlock()
+                        )
+                    }
+                    TeleportStrategy.ATTEMPT_TELEPORT -> {
+                        player.attemptTeleport(
+                            position.x + getCenterPosBlock(),
+                            position.y + getCenterPosBlock(),
+                            position.z + getCenterPosBlock(),
+                            true
+                        )
+                    }
+                    TeleportStrategy.USUALLY_TELEPORT -> {
+                        player.teleport(
+                            player.serverWorld,
+                            position.x + getCenterPosBlock(),
+                            position.y + getCenterPosBlock(),
+                            position.z + getCenterPosBlock(),
+                            player.rotationYaw,
+                            player.rotationPitch
+                        )
+                    }
+                }
+
                 TeleportRollbackManager.removeEntry(playerName)
             }
 
@@ -60,4 +92,7 @@ object BadLocationCommand {
             return 0
         }
     }
+
+    private fun getCenterPosBlock(): Double =
+        if (ConfigurationManager.get().teleportOnCenterBlock) 0.5 else 0.0
 }
