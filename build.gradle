@@ -111,16 +111,6 @@ dependencies {
         name: "ProjectEssentials-Cooldown",
         version: cooldown_version
     )
-    implementation(
-        group: "org.jetbrains.kotlinx",
-        name: "kotlinx-coroutines-core",
-        version: kotlinx_coroutines_core_version
-    )
-    embed(
-        group: "org.jetbrains.kotlinx",
-        name: "kotlinx-coroutines-core",
-        version: kotlinx_coroutines_core_version
-    )
 }
 
 jar {
