@@ -22,9 +22,7 @@ object TeleportRollbackManager {
     fun commitPosition(playerName: String, position: Position) {
         logger.debug("Position $position committing for $playerName")
         purgeAll()
-        removeEntry(
-            playerName
-        )
+        removeEntry(playerName)
         lastPosition.put(playerName, position, ZonedDateTime.now())
     }
 
