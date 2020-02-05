@@ -10,7 +10,6 @@ import kotlin.time.toKotlinDuration
 
 object TeleportRollbackManager {
     private val logger = LogManager.getLogger()
-    private const val DEFAULT_TIMER = 10 // Seconds.
     private val lastPosition =
         HashBasedTable.create<String, Position, ZonedDateTime>()
 
@@ -77,8 +76,5 @@ object TeleportRollbackManager {
         }
     }
 
-    // todo: compatibility with configuration
-    private fun getTimeOut(): Int {
-        return DEFAULT_TIMER
-    }
+    private fun getTimeOut(): Int = ConfigurationManager.get().locationRollBackTimer
 }
