@@ -247,8 +247,6 @@ object RandomTeleportCommand {
             "/bad-location"
         )
 
-        TeleportRollbackManager.commitPosition(player.name.string, position)
-
         if (byOther) {
             player.commandSource.sendFeedback(
                 TranslationTextComponent(
@@ -275,6 +273,8 @@ object RandomTeleportCommand {
         }
 
         if (newPosition != null && locationFound) {
+            TeleportRollbackManager.commitPosition(player.name.string, position)
+
             player.teleportKeepLoaded(
                 newPosition!!.x.toDouble(),
                 newPosition!!.y.toDouble(),
