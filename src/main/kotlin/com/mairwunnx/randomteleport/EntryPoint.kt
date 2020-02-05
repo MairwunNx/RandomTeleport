@@ -3,11 +3,13 @@ package com.mairwunnx.randomteleport
 import com.mairwunnx.projectessentials.permissions.permissions.PermissionsAPI
 import com.mairwunnx.randomteleport.commands.BadLocationCommand
 import com.mairwunnx.randomteleport.commands.RandomTeleportCommand
+import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent
 import org.apache.logging.log4j.LogManager
 
 @Suppress("unused")
@@ -18,6 +20,7 @@ class EntryPoint {
     init {
         logger.info("Random Teleport mod initializing")
         loadAdditionalModules()
+        ConfigurationManager.load()
         MinecraftForge.EVENT_BUS.register(this)
     }
 
@@ -39,9 +42,15 @@ class EntryPoint {
 
     @SubscribeEvent
     fun onServerStarting(it: FMLServerStartingEvent) {
-        logger.info("Commands registering starting for Random Teleport.")
+        logger.info("Commands registering starting for Random Teleport")
         RandomTeleportCommand.register(it.commandDispatcher)
         BadLocationCommand.register(it.commandDispatcher)
+    }
+
+    @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
+    fun onServerStopping(it: FMLServerStoppingEvent) {
+        ConfigurationManager.save()
     }
 
     companion object {
