@@ -5,10 +5,10 @@ package com.mairwunnx.randomteleport.commands
 import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
 import com.mairwunnx.randomteleport.EntryPoint
 import com.mairwunnx.randomteleport.Position
+import com.mairwunnx.randomteleport.configuration.TeleportStrategy
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.block.BedrockBlock
@@ -80,24 +80,12 @@ object RandomTeleportCommand {
         val targets by lazy {
             EntityArgument.getPlayers(context, "players")
         }
-        val radius by lazy {
-            IntegerArgumentType.getInteger(context, "radius")
-        }
-        val depth by lazy {
-            IntegerArgumentType.getInteger(context, "depth")
-        }
 
         if (isPlayer) {
             if (EntryPoint.hasPermission(player, "teleport.random", 1)) {
                 if (targetExist(context)) {
                     if (EntryPoint.hasPermission(player, "teleport.random.other", 3)) {
-                        teleportRandomly(
-                            target,
-                            if (depthExist(context)) depth else 1,
-                            if (radiusExist(context)) radius else 10000,
-                            true,
-                            playerName
-                        )
+                        teleportRandomly(target, true, playerName)
                         return 0
                     } else {
                         context.source.sendFeedback(
@@ -115,13 +103,7 @@ object RandomTeleportCommand {
                         )
                     ) {
                         targets.forEach {
-                            teleportRandomly(
-                                it,
-                                if (depthExist(context)) depth else 1,
-                                if (radiusExist(context)) radius else 10000,
-                                true,
-                                playerName
-                            )
+                            teleportRandomly(it, true, playerName)
                         }
                         return 0
                     } else {
@@ -134,11 +116,7 @@ object RandomTeleportCommand {
                     }
                 }
 
-                teleportRandomly(
-                    player,
-                    if (depthExist(context)) depth else 1,
-                    if (radiusExist(context)) radius else 10000
-                )
+                teleportRandomly(player)
                 return 0
             } else {
                 context.source.sendFeedback(
@@ -150,23 +128,13 @@ object RandomTeleportCommand {
             }
         } else {
             if (targetExist(context)) {
-                teleportRandomly(
-                    target,
-                    if (depthExist(context)) depth else 1,
-                    if (radiusExist(context)) radius else 10000,
-                    true, "server"
-                )
+                teleportRandomly(target, true, "server")
                 return 0
             }
 
             if (targetsExist(context)) {
                 targets.forEach {
-                    teleportRandomly(
-                        it,
-                        if (depthExist(context)) depth else 1,
-                        if (radiusExist(context)) radius else 10000,
-                        true, "server"
-                    )
+                    teleportRandomly(it, true, "server")
                 }
                 return 0
             }
@@ -190,24 +158,8 @@ object RandomTeleportCommand {
         false
     }
 
-    private fun radiusExist(context: CommandContext<CommandSource>): Boolean = try {
-        IntegerArgumentType.getInteger(context, "radius")
-        true
-    } catch (ex: IllegalArgumentException) {
-        false
-    }
-
-    private fun depthExist(context: CommandContext<CommandSource>): Boolean = try {
-        IntegerArgumentType.getInteger(context, "depth")
-        true
-    } catch (ex: IllegalArgumentException) {
-        false
-    }
-
     private fun teleportRandomly(
         player: ServerPlayerEntity,
-        depth: Int,
-        radius: Int,
         byOther: Boolean = false,
         otherName: String = ""
     ) {
@@ -238,8 +190,10 @@ object RandomTeleportCommand {
             )
         }
 
-        repeat(depth) {
-            val anewPosition = getRandomPosition(position, radius)
+        repeat(ConfigurationManager.get().defaultAttempts) {
+            val anewPosition = getRandomPosition(
+                position, ConfigurationManager.get().defaultRadius
+            )
             val tuple = isSafeLocation(world, anewPosition)
             if (tuple.a) {
                 locationFound = true
@@ -251,11 +205,41 @@ object RandomTeleportCommand {
         if (newPosition != null && locationFound) {
             TeleportRollbackManager.commitPosition(player.name.string, position)
 
-            player.teleportKeepLoaded(
-                newPosition!!.x.toDouble(),
-                newPosition!!.y.toDouble(),
-                newPosition!!.z.toDouble()
-            )
+            when (ConfigurationManager.get().teleportStrategy) {
+                TeleportStrategy.KEEP_LOADED -> {
+                    player.teleportKeepLoaded(
+                        newPosition!!.x + getCenterPosBlock(),
+                        newPosition!!.y + getCenterPosBlock(),
+                        newPosition!!.z + getCenterPosBlock()
+                    )
+                }
+                TeleportStrategy.SET_AND_UPDATE -> {
+                    player.setPositionAndUpdate(
+                        newPosition!!.x + getCenterPosBlock(),
+                        newPosition!!.y + getCenterPosBlock(),
+                        newPosition!!.z + getCenterPosBlock()
+                    )
+                }
+                TeleportStrategy.ATTEMPT_TELEPORT -> {
+                    player.attemptTeleport(
+                        newPosition!!.x + getCenterPosBlock(),
+                        newPosition!!.y + getCenterPosBlock(),
+                        newPosition!!.z + getCenterPosBlock(),
+                        true
+                    )
+                }
+                TeleportStrategy.USUALLY_TELEPORT -> {
+                    player.teleport(
+                        player.serverWorld,
+                        newPosition!!.x + getCenterPosBlock(),
+                        newPosition!!.y + getCenterPosBlock(),
+                        newPosition!!.z + getCenterPosBlock(),
+                        player.rotationYaw,
+                        player.rotationPitch
+                    )
+                }
+            }
+
             if (byOther) {
                 player.commandSource.sendFeedback(
                     TranslationTextComponent(
@@ -293,6 +277,9 @@ object RandomTeleportCommand {
         }
     }
 
+    private fun getCenterPosBlock(): Double =
+        if (ConfigurationManager.get().teleportOnCenterBlock) 0.5 else 0.0
+
     private fun getRandomPosition(position: Position, radius: Int): Position {
         val randomForX = random.nextInt(radius).let {
             return@let if (it < minRange) minRange + it else it
@@ -320,7 +307,11 @@ object RandomTeleportCommand {
             val heightTop = world
                 .getChunkAt(BlockPos(position.x, position.y, position.z))
                 .getTopBlockY(
-                    Heightmap.Type.MOTION_BLOCKING,
+                    if (ConfigurationManager.get().canTeleportOnTrees) {
+                        Heightmap.Type.MOTION_BLOCKING
+                    } else {
+                        Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
+                    },
                     position.x,
                     position.z
                 )
