@@ -48,35 +48,11 @@ object RandomTeleportCommand {
                 .then(
                     Commands.argument(
                         "player", EntityArgument.player()
-                    ).then(
-                        Commands.argument(
-                            "radius", IntegerArgumentType.integer(10, 10_000)
-                        ).executes(::execute).then(
-                            Commands.argument(
-                                "depth", IntegerArgumentType.integer(1, 10)
-                            ).executes(::execute)
-                        )
                     ).executes(::execute)
                 ).then(
                     Commands.argument(
                         "players", EntityArgument.players()
-                    ).then(
-                        Commands.argument(
-                            "radius", IntegerArgumentType.integer(10, 10_000)
-                        ).executes(::execute).then(
-                            Commands.argument(
-                                "depth", IntegerArgumentType.integer(1, 10)
-                            ).executes(::execute)
-                        )
                     ).executes(::execute)
-                ).then(
-                    Commands.argument(
-                        "radius", IntegerArgumentType.integer(10, 10_000)
-                    ).executes(::execute).then(
-                        Commands.argument(
-                            "depth", IntegerArgumentType.integer(1, 10)
-                        ).executes(::execute)
-                    )
                 )
 
         val literalNode = dispatcher.register(literal.executes(::execute))
