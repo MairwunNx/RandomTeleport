@@ -19,8 +19,8 @@ class EntryPoint {
 
     init {
         logger.info("Random Teleport mod initializing")
-        loadAdditionalModules()
         ConfigurationManager.load()
+        loadAdditionalModules()
         MinecraftForge.EVENT_BUS.register(this)
     }
 
