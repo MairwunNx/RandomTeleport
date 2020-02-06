@@ -56,8 +56,7 @@ object BadLocationCommand {
                         player.teleport(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock(),
-                            false
+                            position.z + getCenterPosBlock()
                         )
                     }
                     TeleportStrategy.SET_AND_UPDATE -> {
