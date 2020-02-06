@@ -98,3 +98,10 @@ jar {
 }
 
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
+
+//noinspection GroovyAssignabilityCheck
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+    }
+}

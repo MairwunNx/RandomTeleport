@@ -2,29 +2,26 @@
 
 package com.mairwunnx.randomteleport.commands
 
-import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
 import com.mairwunnx.randomteleport.EntryPoint
 import com.mairwunnx.randomteleport.Position
 import com.mairwunnx.randomteleport.configuration.TeleportStrategy
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.block.BedrockBlock
 import net.minecraft.block.BlockState
 import net.minecraft.block.MagmaBlock
-import net.minecraft.block.material.Material
-import net.minecraft.command.CommandSource
-import net.minecraft.command.Commands
-import net.minecraft.command.arguments.EntityArgument
-import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.util.Tuple
+import net.minecraft.block.Material
+import net.minecraft.command.arguments.EntityArgumentType
+import net.minecraft.server.command.CommandManager
+import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
+import net.minecraft.text.ClickEvent
+import net.minecraft.text.TranslatableText
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.TranslationTextComponent
-import net.minecraft.util.text.event.ClickEvent
-import net.minecraft.world.gen.Heightmap
-import net.minecraft.world.server.ServerWorld
+import net.minecraft.world.Heightmap
 import org.apache.logging.log4j.LogManager
 import java.util.*
 
@@ -40,56 +37,43 @@ object RandomTeleportCommand {
         "rtp", "tpr"
     )
 
-    fun register(dispatcher: CommandDispatcher<CommandSource>) {
-        registerAliases()
-
-        val literal =
-            literal<CommandSource>("random-teleport")
-                .then(
-                    Commands.argument(
-                        "player", EntityArgument.player()
-                    ).executes(::execute)
-                ).then(
-                    Commands.argument(
-                        "players", EntityArgument.players()
-                    ).executes(::execute)
-                )
+    fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
+        val literal = CommandManager.literal("random-teleport").then(
+            CommandManager.argument("player", EntityArgumentType.player()).executes(::execute)
+        ).then(
+            CommandManager.argument("players", EntityArgumentType.players()).executes(::execute)
+        )
 
         val literalNode = dispatcher.register(literal.executes(::execute))
         aliases.forEach {
             if (it != "random-teleport") {
                 dispatcher.register(
-                    Commands.literal(it).executes(::execute).redirect(literalNode)
+                    CommandManager.literal(it).executes(::execute).redirect(literalNode)
                 )
             }
         }
     }
 
-    private fun registerAliases() {
-        if (!EntryPoint.cooldownInstalled) return
-        CommandsAliases.aliases["random-teleport"] = aliases.toMutableList()
-    }
-
-    private fun execute(context: CommandContext<CommandSource>): Int {
+    private fun execute(context: CommandContext<ServerCommandSource>): Int {
         val isPlayer = context.source.entity is ServerPlayerEntity
-        val player = context.source.asPlayer()
-        val playerName = context.source.asPlayer().name.string
+        val player = context.source.player
+        val playerName = context.source.player.name.string
         val target by lazy {
-            EntityArgument.getPlayer(context, "player")
+            EntityArgumentType.getPlayer(context, "player")
         }
         val targets by lazy {
-            EntityArgument.getPlayers(context, "players")
+            EntityArgumentType.getPlayers(context, "players")
         }
 
         if (isPlayer) {
-            if (EntryPoint.hasPermission(player, "teleport.random", 1)) {
+            if (EntryPoint.hasPermission(player, 1)) {
                 if (targetExist(context)) {
-                    if (EntryPoint.hasPermission(player, "teleport.random.other", 3)) {
+                    if (EntryPoint.hasPermission(player, 3)) {
                         teleportRandomly(target, true, playerName)
                         return 0
                     } else {
                         context.source.sendFeedback(
-                            TranslationTextComponent(
+                            TranslatableText(
                                 "random_teleport.teleport_other.restricted"
                             ), false
                         )
@@ -98,17 +82,14 @@ object RandomTeleportCommand {
                 }
 
                 if (targetsExist(context)) {
-                    if (EntryPoint.hasPermission(
-                            player, "teleport.random.other.multiple", 4
-                        )
-                    ) {
+                    if (EntryPoint.hasPermission(player, 4)) {
                         targets.forEach {
                             teleportRandomly(it, true, playerName)
                         }
                         return 0
                     } else {
                         context.source.sendFeedback(
-                            TranslationTextComponent(
+                            TranslatableText(
                                 "random_teleport.teleport_other_multiple.restricted"
                             ), false
                         )
@@ -120,7 +101,7 @@ object RandomTeleportCommand {
                 return 0
             } else {
                 context.source.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.restricted"
                     ), false
                 )
@@ -144,15 +125,15 @@ object RandomTeleportCommand {
         }
     }
 
-    private fun targetExist(context: CommandContext<CommandSource>): Boolean = try {
-        EntityArgument.getPlayer(context, "player")
+    private fun targetExist(context: CommandContext<ServerCommandSource>): Boolean = try {
+        EntityArgumentType.getPlayer(context, "player")
         true
     } catch (ex: IllegalArgumentException) {
         false
     }
 
-    private fun targetsExist(context: CommandContext<CommandSource>): Boolean = try {
-        EntityArgument.getPlayers(context, "players")
+    private fun targetsExist(context: CommandContext<ServerCommandSource>): Boolean = try {
+        EntityArgumentType.getPlayers(context, "players")
         true
     } catch (ex: IllegalArgumentException) {
         false
@@ -163,11 +144,11 @@ object RandomTeleportCommand {
         byOther: Boolean = false,
         otherName: String = ""
     ) {
-        val position = Position(player.position.x, player.position.y, player.position.z)
+        val position = Position(player.blockPos.x, player.blockPos.y, player.blockPos.z)
         val world = player.serverWorld
         var newPosition: Position? = null
         var locationFound = false
-        val justInCaseComponent = TranslationTextComponent(
+        val justInCaseComponent = TranslatableText(
             "random_teleport.teleport.just_in_case"
         )
         justInCaseComponent.style.clickEvent = ClickEvent(
@@ -177,14 +158,14 @@ object RandomTeleportCommand {
 
         if (byOther) {
             player.commandSource.sendFeedback(
-                TranslationTextComponent(
+                TranslatableText(
                     "random_teleport.teleport.teleporting_by_other",
                     otherName
                 ), false
             )
         } else {
             player.commandSource.sendFeedback(
-                TranslationTextComponent(
+                TranslatableText(
                     "random_teleport.teleport.teleporting"
                 ), false
             )
@@ -194,10 +175,10 @@ object RandomTeleportCommand {
             val anewPosition = getRandomPosition(
                 position, ConfigurationManager.get().defaultRadius
             )
-            val tuple = isSafeLocation(world, anewPosition)
-            if (tuple.a) {
+            val pair = isSafeLocation(world, anewPosition)
+            if (pair.first) {
                 locationFound = true
-                newPosition = Position(anewPosition.x, tuple.b, anewPosition.z)
+                newPosition = Position(anewPosition.x, pair.second, anewPosition.z)
                 return@repeat
             }
         }
@@ -206,50 +187,41 @@ object RandomTeleportCommand {
             TeleportRollbackManager.commitPosition(player.name.string, position)
 
             when (ConfigurationManager.get().teleportStrategy) {
-                TeleportStrategy.KEEP_LOADED -> {
-                    player.teleportKeepLoaded(
+                TeleportStrategy.USUALLY_TELEPORT -> {
+                    player.teleport(
                         newPosition!!.x + getCenterPosBlock(),
                         newPosition!!.y + getCenterPosBlock(),
                         newPosition!!.z + getCenterPosBlock()
                     )
                 }
                 TeleportStrategy.SET_AND_UPDATE -> {
-                    player.setPositionAndUpdate(
+                    player.setPositionAnglesAndUpdate(
+                        newPosition!!.x + getCenterPosBlock(),
+                        newPosition!!.y + getCenterPosBlock(),
+                        newPosition!!.z + getCenterPosBlock(),
+                        player.yaw,
+                        player.pitch
+                    )
+                }
+                TeleportStrategy.SET_POSITION -> {
+                    player.setPosition(
                         newPosition!!.x + getCenterPosBlock(),
                         newPosition!!.y + getCenterPosBlock(),
                         newPosition!!.z + getCenterPosBlock()
-                    )
-                }
-                TeleportStrategy.ATTEMPT_TELEPORT -> {
-                    player.attemptTeleport(
-                        newPosition!!.x + getCenterPosBlock(),
-                        newPosition!!.y + getCenterPosBlock(),
-                        newPosition!!.z + getCenterPosBlock(),
-                        true
-                    )
-                }
-                TeleportStrategy.USUALLY_TELEPORT -> {
-                    player.teleport(
-                        player.serverWorld,
-                        newPosition!!.x + getCenterPosBlock(),
-                        newPosition!!.y + getCenterPosBlock(),
-                        newPosition!!.z + getCenterPosBlock(),
-                        player.rotationYaw,
-                        player.rotationPitch
                     )
                 }
             }
 
             if (byOther) {
                 player.commandSource.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.success_by_other",
                         otherName
                     ), false
                 )
             } else {
                 player.commandSource.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.success"
                     ), false
                 )
@@ -262,14 +234,14 @@ object RandomTeleportCommand {
             TeleportRollbackManager.removeEntry(player.name.string)
             if (byOther) {
                 player.commandSource.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.failed_by_other",
                         otherName
                     ), false
                 )
             } else {
                 player.commandSource.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.failed"
                     ), false
                 )
@@ -302,39 +274,37 @@ object RandomTeleportCommand {
         return Position(randomX, 256, randomZ)
     }
 
-    private fun isSafeLocation(world: ServerWorld, position: Position): Tuple<Boolean, Int> {
+    private fun isSafeLocation(world: ServerWorld, position: Position): Pair<Boolean, Int> {
         if (!world.dimension.isNether) {
             val heightTop = world
-                .getChunkAt(BlockPos(position.x, position.y, position.z))
-                .getTopBlockY(
+                .getChunk(BlockPos(position.x, position.y, position.z))
+                .getHeightmap(
                     if (ConfigurationManager.get().canTeleportOnTrees) {
                         Heightmap.Type.MOTION_BLOCKING
                     } else {
                         Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
-                    },
-                    position.x,
-                    position.z
-                )
+                    }
+                ).get(position.x, position.z)
 
             val blockPos = BlockPos(position.x, heightTop, position.z)
             val blockState: BlockState = world.getBlockState(blockPos)
 
-            if (!blockState.isAir(world, blockPos)) {
+            if (!blockState.isAir) {
                 val material = blockState.material
-                return Tuple(!material.isLiquid && material != Material.FIRE, blockPos.y + 1)
+                return Pair(!material.isLiquid && material != Material.FIRE, blockPos.y + 1)
             }
-            return Tuple(false, 0)
+            return Pair(false, 0)
         } else {
             var blockPos = BlockPos(position.x, 10, position.z)
 
             while (blockPos.y < 100) {
                 val blockState: BlockState = world.getBlockState(blockPos)
-                if (!blockState.isAir(world, blockPos) &&
-                    world.getBlockState(blockPos.up()).isAir(world, blockPos.up()) &&
-                    world.getBlockState(blockPos.up().up()).isAir(world, blockPos.up().up())
+                if (!blockState.isAir &&
+                    world.getBlockState(blockPos.up()).isAir &&
+                    world.getBlockState(blockPos.up().up()).isAir
                 ) {
                     val material = blockState.material
-                    return Tuple(
+                    return Pair(
                         !material.isLiquid &&
                                 material != Material.FIRE &&
                                 blockState.block !is MagmaBlock &&
@@ -345,7 +315,7 @@ object RandomTeleportCommand {
 
                 blockPos = blockPos.up()
             }
-            return Tuple(false, 0)
+            return Pair(false, 0)
         }
     }
 }

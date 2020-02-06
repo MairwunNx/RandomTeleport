@@ -5,29 +5,31 @@ import com.mairwunnx.randomteleport.configuration.TeleportStrategy
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandSource
-import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.util.text.TranslationTextComponent
+import net.minecraft.server.command.CommandManager
+import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.TranslatableText
 import org.apache.logging.log4j.LogManager
 
 object BadLocationCommand {
     private val logger = LogManager.getLogger()
 
-    fun register(dispatcher: CommandDispatcher<CommandSource>) {
-        dispatcher.register(literal<CommandSource>("bad-location").executes(::execute))
+    fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
+        dispatcher.register(
+            CommandManager.literal("bad-location").executes(::execute)
+        )
     }
 
-    private fun execute(context: CommandContext<CommandSource>): Int {
+    private fun execute(context: CommandContext<ServerCommandSource>): Int {
         val isPlayer = context.source.entity is ServerPlayerEntity
-        val player = context.source.asPlayer()
-        val playerName = context.source.asPlayer().name.string
+        val player = context.source.player
+        val playerName = context.source.player.name.string
 
         if (isPlayer) {
-            if (!EntryPoint.hasPermission(player, "teleport.random.rollback", 1)) {
+            if (!EntryPoint.hasPermission(player, 1)) {
                 context.source.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.rollback_restricted"
                     ), false
                 )
@@ -38,48 +40,40 @@ object BadLocationCommand {
 
             if (position == null) {
                 context.source.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.expired_or_not_was_teleported"
                     ), false
                 )
             } else {
                 context.source.sendFeedback(
-                    TranslationTextComponent(
+                    TranslatableText(
                         "random_teleport.teleport.teleporting_back"
                     ), false
                 )
 
                 when (ConfigurationManager.get().teleportStrategy) {
-                    TeleportStrategy.KEEP_LOADED -> {
-                        player.teleportKeepLoaded(
+                    TeleportStrategy.USUALLY_TELEPORT -> {
+                        player.teleport(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock()
+                            position.z + getCenterPosBlock(),
+                            false
                         )
                     }
                     TeleportStrategy.SET_AND_UPDATE -> {
-                        player.setPositionAndUpdate(
+                        player.setPositionAnglesAndUpdate(
+                            position.x + getCenterPosBlock(),
+                            position.y + getCenterPosBlock(),
+                            position.z + getCenterPosBlock(),
+                            player.yaw,
+                            player.pitch
+                        )
+                    }
+                    TeleportStrategy.SET_POSITION -> {
+                        player.setPosition(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
                             position.z + getCenterPosBlock()
-                        )
-                    }
-                    TeleportStrategy.ATTEMPT_TELEPORT -> {
-                        player.attemptTeleport(
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock(),
-                            true
-                        )
-                    }
-                    TeleportStrategy.USUALLY_TELEPORT -> {
-                        player.teleport(
-                            player.serverWorld,
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock(),
-                            player.rotationYaw,
-                            player.rotationPitch
                         )
                     }
                 }

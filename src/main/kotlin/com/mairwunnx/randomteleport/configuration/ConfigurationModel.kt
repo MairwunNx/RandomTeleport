@@ -7,7 +7,7 @@ data class ConfigurationModel(
     var canTeleportOnTrees: Boolean = true,
     var defaultRadius: Int = 4096,
     var defaultAttempts: Int = 1,
-    var teleportStrategy: TeleportStrategy = TeleportStrategy.KEEP_LOADED,
+    var teleportStrategy: TeleportStrategy = TeleportStrategy.USUALLY_TELEPORT,
     var teleportOnCenterBlock: Boolean = true,
     var interactWithEssentials: Boolean = true,
     var locationRollBackTimer: Int = 10,
