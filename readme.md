@@ -2,12 +2,12 @@
 
 ![image](assets/Description.png)
 
-[![image](assets/howinstall.png)](docs/how-install.md)
+[![image](assets/HowInstall.png)](docs/how-install.md)
 
-[![image](assets/configuration.png)](docs/configuration.md)
+[![image](assets/Configuration.png)](docs/configuration.md)
 
-[![image](assets/changelog.png)](docs/changelog.md)
+[![image](assets/Changelog.png)](docs/changelog.md)
 
-[![image](assets/telegram.png)](https://t.me/minecraftforge)
+[![image](assets/Telegram.png)](https://t.me/minecraftforge)
 
-[![image](assets/support.png)](https://ko-fi.com/mairwunnx)
+[![image](assets/Support.png)](https://ko-fi.com/mairwunnx)
