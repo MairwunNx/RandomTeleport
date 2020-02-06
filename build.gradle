@@ -1,18 +1,11 @@
 buildscript {
     repositories {
-        maven { url("https://files.minecraftforge.net/maven") }
         maven { url("https://libraries.minecraft.net") }
         maven { url("https://plugins.gradle.org/m2/") }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath(
-            group: "net.minecraftforge.gradle",
-            name: "ForgeGradle",
-            version: forge_gradle_version,
-            changing: true
-        )
         classpath(
             "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         )
@@ -22,64 +15,41 @@ buildscript {
     }
 }
 
-apply(plugin: "net.minecraftforge.gradle")
-apply(plugin: "kotlin")
+plugins {
+    id 'fabric-loom'
+    id 'maven-publish'
+    id "org.jetbrains.kotlin.jvm"
+}
+
 apply(plugin: "kotlinx-serialization")
 
-version = module_version
-group = "com.mairwunnx.$module_id"
-archivesBaseName = module_name
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
+minecraft {
+}
 
 configurations {
     embed
     compile.extendsFrom(embed)
 }
 
-minecraft {
-    mappings(
-        channel: forge_mappings_channel_type,
-        version: forge_mappings_channel_version
-    )
-
-    runs {
-        client {
-            //noinspection GroovyAssignabilityCheck
-            workingDirectory(project.file(dev_run_client_path))
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("forge.logging.console.level", "debug")
-            mods {
-                RandomTeleport {
-                    //noinspection GroovyAssignabilityCheck
-                    source(sourceSets.main)
-                }
-            }
-        }
-
-        server {
-            //noinspection GroovyAssignabilityCheck
-            workingDirectory(project.file(dev_run_server_path))
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("forge.logging.console.level", "debug")
-            mods {
-                RandomTeleport {
-                    //noinspection GroovyAssignabilityCheck
-                    source(sourceSets.main)
-                }
-            }
-        }
-    }
-}
-
 repositories {
     jcenter()
     mavenCentral()
-    maven { url("https://minecraft.curseforge.com/api/maven/") }
-    maven { url("https://libraries.minecraft.net") }
-    maven { url("https://jitpack.io") }
+    maven { url = "http://maven.fabricmc.net/" }
 }
 
 dependencies {
-    minecraft(group: "net.minecraftforge", name: "forge", version: forge_version)
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
     compile(group: "com.mojang", name: "brigadier", version: brigadier_version)
     compile(
         group: "org.jetbrains.kotlinx",
@@ -91,53 +61,40 @@ dependencies {
         name: "kotlinx-serialization-runtime",
         version: kotlinx_serialization_version
     )
-    compile(
-        group: "org.jetbrains.kotlin",
-        name: "kotlin-stdlib-$kotlin_jdk_version_target",
-        version: kotlin_version
-    )
-    embed(
-        group: "org.jetbrains.kotlin",
-        name: "kotlin-stdlib-$kotlin_jdk_version_target",
-        version: kotlin_version
-    )
-    compile(
-        group: "com.github.projectessentials",
-        name: "ProjectEssentials-Permissions",
-        version: permissions_version
-    )
-    compile(
-        group: "com.github.projectessentials",
-        name: "ProjectEssentials-Cooldown",
-        version: cooldown_version
-    )
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from configurations.embed.collect {
+        System.out.println(it.name)
+        if (it.name != "kotlin-stdlib-1.3.61.jar" &&
+            it.name != "kotlin-stdlib-common-1.3.61.jar"
+        ) {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    classifier = "sources"
+    from sourceSets.main.allSource
 }
 
 jar {
-    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest {
-        attributes([
-            "Specification-Title"     : module_name,
-            "Specification-Vendor"    : module_version,
-            "Specification-Version"   : module_vendor,
-            "Implementation-Title"    : module_name,
-            "Implementation-Version"  : module_version,
-            "Implementation-Vendor"   : module_vendor,
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
+    from "LICENSE"
 }
 
-sourceCompatibility = targetCompatibility =
-    compileJava.sourceCompatibility =
-        compileJava.targetCompatibility = project_jvm_version_target
-
-compileKotlin.kotlinOptions.jvmTarget =
-    compileTestKotlin.kotlinOptions.jvmTarget = project_jvm_version_target
-
-//noinspection GroovyAssignabilityCheck
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
-    }
-}
+compileKotlin.kotlinOptions.jvmTarget = "1.8"
