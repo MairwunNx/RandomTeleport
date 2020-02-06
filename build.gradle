@@ -82,10 +82,7 @@ tasks.withType(JavaCompile) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     from configurations.embed.collect {
-        System.out.println(it.name)
-        if (it.name != "kotlin-stdlib-1.3.61.jar" &&
-            it.name != "kotlin-stdlib-common-1.3.61.jar"
-        ) {
+        if (it.name == "kotlinx-serialization-runtime-${kotlinx_serialization_version}.jar") {
             it.isDirectory() ? it : zipTree(it)
         }
     }
