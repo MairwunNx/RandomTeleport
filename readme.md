@@ -8,7 +8,7 @@
 
 [![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Configuration.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/docs/configuration.md)
 
-[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Changelog.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/docs/changelog.md)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Changelog.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/changelog.md)
 
 [![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Telegram.png)](https://t.me/minecraftforge)
 
