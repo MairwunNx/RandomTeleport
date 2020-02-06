@@ -1,21 +1,15 @@
-![image](assets/SocialBanner.png)
+![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/SocialBanner.png)
 
-![image](assets/WhatIt.png)
+![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Description.png)
 
-![image](assets/Features.png)
+![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Sources.png)
 
-![image](assets/Commands.png)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/HowInstall.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/docs/how-install.md)
 
-![image](assets/Permissions.png)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Configuration.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/docs/configuration.md)
 
-[![image](assets/Configuration.png)](docs/configuration.md)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Changelog.png)](https://github.com/MairwunNx/RandomTeleport/blob/master/docs/changelog.md)
 
-[![image](assets/HowInstall.png)](docs/how-install.md)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Telegram.png)](https://t.me/minecraftforge)
 
-[![image](assets/Troubleshooting.png)](https://github.com/MairwunNx/RandomTeleport/issues/new/choose)
-
-[![image](assets/Changelog.png)](https://github.com/MairwunNx/RandomTeleport/blob/FORGE-1.14.4/changelog.md)
-
-[![image](assets/Telegram.png)](https://t.me/minecraftforge)
-
-[![image](assets/Thanks.png)](docs/thanks.md)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Support.png)](https://ko-fi.com/mairwunnx)
