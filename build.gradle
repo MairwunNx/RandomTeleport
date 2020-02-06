@@ -66,6 +66,12 @@ dependencies {
 processResources {
     inputs.property "version", project.version
 
+    from configurations.embed.collect {
+        if (it.name == "kotlinx-serialization-runtime-0.14.0.jar") {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
     from(sourceSets.main.resources.srcDirs) {
         include "fabric.mod.json"
         expand "version": project.version
@@ -81,11 +87,6 @@ tasks.withType(JavaCompile) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    from configurations.embed.collect {
-        if (it.name == "kotlinx-serialization-runtime-${kotlinx_serialization_version}.jar") {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
     classifier = "sources"
     from sourceSets.main.allSource
 }
