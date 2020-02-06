@@ -1,7 +1,7 @@
 package com.mairwunnx.randomteleport.commands
 
 import com.mairwunnx.randomteleport.EntryPoint
-import com.mairwunnx.randomteleport.configuration.TeleportStrategy
+import com.mairwunnx.randomteleport.configuration.TeleportStrategy.*
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
@@ -52,14 +52,14 @@ object BadLocationCommand {
                 )
 
                 when (ConfigurationManager.get().teleportStrategy) {
-                    TeleportStrategy.USUALLY_TELEPORT -> {
+                    USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT -> {
                         player.teleport(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
                             position.z + getCenterPosBlock()
                         )
                     }
-                    TeleportStrategy.SET_AND_UPDATE -> {
+                    SET_AND_UPDATE -> {
                         player.setPositionAnglesAndUpdate(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
@@ -68,7 +68,7 @@ object BadLocationCommand {
                             player.pitch
                         )
                     }
-                    TeleportStrategy.SET_POSITION -> {
+                    SET_POSITION -> {
                         player.setPosition(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
