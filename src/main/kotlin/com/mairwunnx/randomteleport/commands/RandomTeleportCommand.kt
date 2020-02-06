@@ -21,7 +21,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.Heightmap
+import net.minecraft.world.BlockView
 import org.apache.logging.log4j.LogManager
 import java.util.*
 
@@ -276,15 +276,7 @@ object RandomTeleportCommand {
 
     private fun isSafeLocation(world: ServerWorld, position: Position): Pair<Boolean, Int> {
         if (!world.dimension.isNether) {
-            val heightTop = world
-                .getChunk(BlockPos(position.x, position.y, position.z))
-                .getHeightmap(
-                    if (ConfigurationManager.get().canTeleportOnTrees) {
-                        Heightmap.Type.MOTION_BLOCKING
-                    } else {
-                        Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
-                    }
-                ).get(position.x, position.z)
+            val heightTop = getTopY(world, BlockPos(position.x, 257, position.z))
 
             val blockPos = BlockPos(position.x, heightTop, position.z)
             val blockState: BlockState = world.getBlockState(blockPos)
@@ -317,5 +309,14 @@ object RandomTeleportCommand {
             }
             return Pair(false, 0)
         }
+    }
+
+    private fun getTopY(blockView: BlockView, pos: BlockPos): Int {
+        var blockPos = pos
+        do {
+            if (blockPos.y <= 0) return 257
+            blockPos = blockPos.down()
+        } while (blockView.getBlockState(blockPos).isAir)
+        return blockPos.y
     }
 }
