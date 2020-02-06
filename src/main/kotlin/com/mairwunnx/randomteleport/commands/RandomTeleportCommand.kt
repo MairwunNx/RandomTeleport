@@ -316,7 +316,14 @@ object RandomTeleportCommand {
         do {
             if (blockPos.y <= 0) return 257
             blockPos = blockPos.down()
-        } while (blockView.getBlockState(blockPos).isAir)
+        } while (
+            when {
+                blockView.getBlockState(blockPos).isAir -> true
+                else -> blockView.getBlockState(blockPos).material == Material.LEAVES &&
+                        !ConfigurationManager.get().canTeleportOnTrees
+            }
+        )
+
         return blockPos.y
     }
 }
