@@ -6,6 +6,10 @@ bin
 .classpath
 .project
 
+# fabric
+
+minecraft/
+
 # idea
 out
 *.ipr
