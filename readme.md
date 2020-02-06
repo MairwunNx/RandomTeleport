@@ -1,6 +1,6 @@
-![image](assets/socialbanner.png)
+![image](assets/SocialBanner.png)
 
-![image](assets/description.png)
+![image](assets/Description.png)
 
 [![image](assets/howinstall.png)](docs/how-install.md)
 
