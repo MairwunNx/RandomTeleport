@@ -2,6 +2,8 @@
 
 ![image](assets/Description.png)
 
+![image](assets/Sources.png)
+
 [![image](assets/HowInstall.png)](docs/how-install.md)
 
 [![image](assets/Configuration.png)](docs/configuration.md)
