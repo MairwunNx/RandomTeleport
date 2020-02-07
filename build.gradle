@@ -28,7 +28,7 @@ apply(plugin: "kotlinx-serialization")
 
 version = module_version
 group = "com.mairwunnx.$module_id"
-archivesBaseName = module_name
+archivesBaseName = "$module_name-Forge"
 
 configurations {
     embed
