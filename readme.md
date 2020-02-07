@@ -8,7 +8,7 @@
 
 [![image](assets/Configuration.png)](docs/configuration.md)
 
-[![image](assets/Changelog.png)](docs/changelog.md)
+[![image](assets/Changelog.png)](changelog.md)
 
 [![image](assets/Telegram.png)](https://t.me/minecraftforge)
 
