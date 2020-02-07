@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.2-1.0.1] - 2020-02-07
+
+### Fixed
+- Incorrect permissions checking.
+
 ## [1.15.2-1.0.0] - 2020-02-07
 
 ### Added
