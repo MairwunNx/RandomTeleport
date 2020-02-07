@@ -33,6 +33,8 @@ It configuration file store settings for random teleport mod
 
 **For fabric note**: property `interactWithEssentials` not exist in fabric configuration.
 
+**For forge 1.15.2 note**: property `interactWithEssentials` not exist in configuration.
+
 ## Small documentation :)
 
 Sorry for the very bad English, maybe you can fix it in Pull request.
@@ -44,7 +46,7 @@ Sorry for the very bad English, maybe you can fix it in Pull request.
 |`defaultAttempts`           |`Int`             |Attempts to teleport randomly. Attempts usings when random teleport failed by reason "unsafely place".|
 |`teleportStrategy`          |`TeleportStrategy`|Teleport strategy. Available values **FOR FORGE**: [KEEP_LOADED, SET_AND_UPDATE, USUALLY_TELEPORT, ATTEMPT_TELEPORT], Available values **FOR FABRIC**: [USUALLY_TELEPORT, SET_AND_UPDATE, SET_POSITION], difference in teleportation function implementations. I will describe it later. But briefly, like this. **For forge**: KEEP_LOADED - Keeps chunks loaded for a while for you. SET_AND_UPDATE - Just sets a new position for the player and updates the data. USUALLY_TELEPORT - the most common teleport, it just teleports. ATTEMPT_TELEPORT - based on the name, an attempt will be made to teleport, and most likely, if you find yourself in blocks, this can somehow fix the situation. You can try each one and see what each one does and how it affects performance, I’m sure there will be different performance indicators.|
 |`teleportOnCenterBlock`     |`Boolean`         |If value true then you'll be teleported on center block.|
-|`interactWithEssentials`    |`Boolean`         |Enables compatibility with Project Essentials modules. **NOT EXIST IN FABRIC CONFIGURATION!**|
+|`interactWithEssentials`    |`Boolean`         |Enables compatibility with Project Essentials modules. **NOT EXIST IN FABRIC AND FORGE 1.15.2 CONFIGURATION!**|
 |`locationRollBackTimer`     |`Int`             |Location rollback timer.|
 |`minRandomTeleportRadius`   |`Int`             |Minimal random teleport radius in blocks.|
 
