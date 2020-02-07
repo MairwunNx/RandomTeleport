@@ -26,9 +26,9 @@ apply(plugin: "net.minecraftforge.gradle")
 apply(plugin: "kotlin")
 apply(plugin: "kotlinx-serialization")
 
-version = module_version
-group = "com.mairwunnx.$module_id"
-archivesBaseName = module_name
+version = mod_version
+group = "com.mairwunnx.$mod_id"
+archivesBaseName = mod_name
 
 configurations {
     embed
@@ -117,12 +117,12 @@ jar {
     from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
     manifest {
         attributes([
-            "Specification-Title"     : module_name,
-            "Specification-Vendor"    : module_version,
-            "Specification-Version"   : module_vendor,
-            "Implementation-Title"    : module_name,
-            "Implementation-Version"  : module_version,
-            "Implementation-Vendor"   : module_vendor,
+            "Specification-Title"     : mod_name,
+            "Specification-Vendor"    : mod_version,
+            "Specification-Version"   : mod_vendor,
+            "Implementation-Title"    : mod_name,
+            "Implementation-Version"  : mod_version,
+            "Implementation-Vendor"   : mod_vendor,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
