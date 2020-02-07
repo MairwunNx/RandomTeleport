@@ -39,6 +39,6 @@ class EntryPoint {
         internal fun hasPermission(
             player: ServerPlayerEntity,
             opLevel: Int
-        ): Boolean = player.server.opPermissionLevel >= opLevel
+        ): Boolean = player.hasPermissionLevel(opLevel)
     }
 }
