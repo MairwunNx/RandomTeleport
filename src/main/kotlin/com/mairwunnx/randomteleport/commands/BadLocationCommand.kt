@@ -52,24 +52,15 @@ object BadLocationCommand {
                 )
 
                 when (ConfigurationManager.get().teleportStrategy) {
-                    USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT -> {
+                    USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT, SET_AND_UPDATE -> {
                         player.teleport(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
                             position.z + getCenterPosBlock()
                         )
                     }
-                    SET_AND_UPDATE -> {
-                        player.setPositionAnglesAndUpdate(
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock(),
-                            player.yaw,
-                            player.pitch
-                        )
-                    }
                     SET_POSITION -> {
-                        player.setPosition(
+                        player.setPos(
                             position.x + getCenterPosBlock(),
                             position.y + getCenterPosBlock(),
                             position.z + getCenterPosBlock()

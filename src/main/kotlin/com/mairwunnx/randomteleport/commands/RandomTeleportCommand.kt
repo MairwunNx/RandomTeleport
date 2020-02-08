@@ -187,24 +187,15 @@ object RandomTeleportCommand {
             TeleportRollbackManager.commitPosition(player.name.string, position)
 
             when (ConfigurationManager.get().teleportStrategy) {
-                USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT -> {
+                USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT, SET_AND_UPDATE -> {
                     player.teleport(
                         newPosition!!.x + getCenterPosBlock(),
                         newPosition!!.y + getCenterPosBlock(),
                         newPosition!!.z + getCenterPosBlock()
                     )
                 }
-                SET_AND_UPDATE -> {
-                    player.setPositionAnglesAndUpdate(
-                        newPosition!!.x + getCenterPosBlock(),
-                        newPosition!!.y + getCenterPosBlock(),
-                        newPosition!!.z + getCenterPosBlock(),
-                        player.yaw,
-                        player.pitch
-                    )
-                }
                 SET_POSITION -> {
-                    player.setPosition(
+                    player.setPos(
                         newPosition!!.x + getCenterPosBlock(),
                         newPosition!!.y + getCenterPosBlock(),
                         newPosition!!.z + getCenterPosBlock()
