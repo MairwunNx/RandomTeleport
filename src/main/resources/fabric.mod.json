@@ -9,7 +9,7 @@
   ],
   "contact": {
     "homepage": "https://github.com/MairwunNx/RandomTeleport",
-    "sources": "https://github.com/MairwunNx/RandomTeleport/tree/FABRIC-1.14.4"
+    "sources": "https://github.com/MairwunNx/RandomTeleport/tree/FABRIC-1.15.2"
   },
   "license": "GNU GPLv3",
   "icon": "assets/randomteleport/logo.png",
@@ -29,7 +29,7 @@
     "fabricloader": ">=0.7.1",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.14.x"
+    "minecraft": "1.15.x"
   },
   "suggests": {
     "flamingo": "*"
