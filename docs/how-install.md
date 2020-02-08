@@ -2,7 +2,7 @@
 
 **If you have forge** then for start the modification, you need installed Forge, it is desirable that the version matches the supported versions. You can download Forge 1.14.4 from the [link](https://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.14.4.html) or Forge 1.15.2 from the [link](https://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.15.2.html).
 
-**If you have fabric** then for start the modification, you need installed Fabric, it is desirable that the version matches the supported versions. You can download Fabric from the [link](https://fabricmc.net/use/) (click on **Vanilla**, select latest version and download .exe or .jar as executable file).
+**If you have fabric** then for start the modification, you need installed Fabric, it is desirable that the version matches the supported versions (1.14.4 or 1.15.2). You can download Fabric from the [link](https://fabricmc.net/use/) (click on **Vanilla**, select latest version and download .exe or .jar as executable file).
 
 Move the downloaded mod to the `mods` folder (installation example below).
 
