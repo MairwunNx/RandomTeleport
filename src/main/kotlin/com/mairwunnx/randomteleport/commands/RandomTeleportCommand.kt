@@ -68,32 +68,32 @@ object RandomTeleportCommand {
         if (isPlayer) {
             if (EntryPoint.hasPermission(player, 1)) {
                 if (targetExist(context)) {
-                    if (EntryPoint.hasPermission(player, 3)) {
+                    return if (EntryPoint.hasPermission(player, 3)) {
                         teleportRandomly(target, true, playerName)
-                        return 0
+                        0
                     } else {
                         context.source.sendFeedback(
                             TranslatableText(
                                 "random_teleport.teleport_other.restricted"
                             ), false
                         )
-                        return 0
+                        0
                     }
                 }
 
                 if (targetsExist(context)) {
-                    if (EntryPoint.hasPermission(player, 4)) {
+                    return if (EntryPoint.hasPermission(player, 4)) {
                         targets.forEach {
                             teleportRandomly(it, true, playerName)
                         }
-                        return 0
+                        0
                     } else {
                         context.source.sendFeedback(
                             TranslatableText(
                                 "random_teleport.teleport_other_multiple.restricted"
                             ), false
                         )
-                        return 0
+                        0
                     }
                 }
 
