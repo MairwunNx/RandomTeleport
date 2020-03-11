@@ -25,7 +25,7 @@ object BadLocationCommand {
         val playerName = context.source.asPlayer().name.string
 
         if (isPlayer) {
-            if (!EntryPoint.hasPermission(player, 1)) {
+            if (!EntryPoint.hasPermission(player, "teleport.random.rollback", 1)) {
                 context.source.sendFeedback(
                     TranslationTextComponent(
                         "random_teleport.teleport.rollback_restricted"

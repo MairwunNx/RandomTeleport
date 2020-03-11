@@ -9,6 +9,7 @@ data class ConfigurationModel(
     var defaultAttempts: Int = 1,
     var teleportStrategy: TeleportStrategy = TeleportStrategy.KEEP_LOADED,
     var teleportOnCenterBlock: Boolean = true,
+    var interactWithEssentials: Boolean = true,
     var locationRollBackTimer: Int = 10,
     var minRandomTeleportRadius: Int = 30
 )

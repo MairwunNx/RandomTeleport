@@ -2,6 +2,7 @@
 
 package com.mairwunnx.randomteleport.commands
 
+import com.mairwunnx.projectessentials.cooldown.essentials.CommandsAliases
 import com.mairwunnx.randomteleport.EntryPoint
 import com.mairwunnx.randomteleport.Position
 import com.mairwunnx.randomteleport.configuration.TeleportStrategy
@@ -40,6 +41,8 @@ object RandomTeleportCommand {
     )
 
     fun register(dispatcher: CommandDispatcher<CommandSource>) {
+        registerAliases()
+
         val literal =
             literal<CommandSource>("random-teleport")
                 .then(
@@ -62,6 +65,11 @@ object RandomTeleportCommand {
         }
     }
 
+    private fun registerAliases() {
+        if (!EntryPoint.cooldownInstalled) return
+        CommandsAliases.aliases["random-teleport"] = aliases.toMutableList()
+    }
+
     private fun execute(context: CommandContext<CommandSource>): Int {
         val isPlayer = context.source.entity is ServerPlayerEntity
         val player = context.source.asPlayer()
@@ -74,34 +82,37 @@ object RandomTeleportCommand {
         }
 
         if (isPlayer) {
-            if (EntryPoint.hasPermission(player, 1)) {
+            if (EntryPoint.hasPermission(player, "teleport.random", 1)) {
                 if (targetExist(context)) {
-                    return if (EntryPoint.hasPermission(player, 3)) {
+                    if (EntryPoint.hasPermission(player, "teleport.random.other", 3)) {
                         teleportRandomly(target, true, playerName)
-                        0
+                        return 0
                     } else {
                         context.source.sendFeedback(
                             TranslationTextComponent(
                                 "random_teleport.teleport_other.restricted"
                             ), false
                         )
-                        0
+                        return 0
                     }
                 }
 
                 if (targetsExist(context)) {
-                    return if (EntryPoint.hasPermission(player, 4)) {
+                    if (EntryPoint.hasPermission(
+                            player, "teleport.random.other.multiple", 4
+                        )
+                    ) {
                         targets.forEach {
                             teleportRandomly(it, true, playerName)
                         }
-                        0
+                        return 0
                     } else {
                         context.source.sendFeedback(
                             TranslationTextComponent(
                                 "random_teleport.teleport_other_multiple.restricted"
                             ), false
                         )
-                        0
+                        return 0
                     }
                 }
 

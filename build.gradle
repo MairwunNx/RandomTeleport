@@ -101,6 +101,16 @@ dependencies {
         name: "kotlin-stdlib-$kotlin_jdk_version_target",
         version: kotlin_version
     )
+    compile(
+        group: "com.github.projectessentials",
+        name: "ProjectEssentials-Permissions",
+        version: "v1.15.2-1.+"
+    )
+    compile(
+        group: "com.github.projectessentials",
+        name: "ProjectEssentials-Cooldown",
+        version: "v1.15.2-1.+"
+    )
 }
 
 jar {

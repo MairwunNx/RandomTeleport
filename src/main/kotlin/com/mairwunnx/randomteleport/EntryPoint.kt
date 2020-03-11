@@ -1,5 +1,6 @@
 package com.mairwunnx.randomteleport
 
+import com.mairwunnx.projectessentials.permissions.permissions.PermissionsAPI
 import com.mairwunnx.randomteleport.commands.BadLocationCommand
 import com.mairwunnx.randomteleport.commands.RandomTeleportCommand
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
@@ -19,7 +20,26 @@ class EntryPoint {
     init {
         logger.info("Random Teleport mod initializing")
         ConfigurationManager.load()
+        loadAdditionalModules()
         MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    private fun loadAdditionalModules() {
+        if (ConfigurationManager.get().interactWithEssentials) {
+            try {
+                Class.forName(permissionAPIClassPath)
+                permissionsInstalled = true
+            } catch (_: ClassNotFoundException) {
+                // ignored
+            }
+
+            try {
+                Class.forName(cooldownAPIClassPath)
+                cooldownInstalled = true
+            } catch (_: ClassNotFoundException) {
+                // ignored
+            }
+        }
     }
 
     @SubscribeEvent
@@ -36,9 +56,22 @@ class EntryPoint {
     }
 
     companion object {
+        private const val permissionAPIClassPath =
+            "com.mairwunnx.projectessentials.permissions.permissions.PermissionsAPI"
+        private const val cooldownAPIClassPath =
+            "com.mairwunnx.projectessentials.cooldown.essentials.CooldownAPI"
+
+        private var permissionsInstalled: Boolean = false
+        var cooldownInstalled: Boolean = false
+
         internal fun hasPermission(
             player: ServerPlayerEntity,
+            node: String,
             opLevel: Int
-        ): Boolean = player.hasPermissionLevel(opLevel)
+        ): Boolean = if (permissionsInstalled) {
+            PermissionsAPI.hasPermission(player.name.string, node)
+        } else {
+            player.server.opPermissionLevel >= opLevel
+        }
     }
 }
