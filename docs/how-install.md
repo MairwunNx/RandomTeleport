@@ -22,8 +22,8 @@ const val MV = valueOf(your_minecraft_version)
 ├── config
 ├── libraries
 ├── mods (that's how it should be)
-│   ├── Project Essentials Cooldown-1.MV.X-1.X.X.jar (recommended, for forge 1.14.4 only)
-│   ├── Project Essentials Permissions-1.MV.X-1.X.X.jar (recommended, for forge 1.14.4 only)
+│   ├── Project Essentials Cooldown-1.MV.X-1.X.X.jar (recommended, for forge only)
+│   ├── Project Essentials Permissions-1.MV.X-1.X.X.jar (recommended, for forge only)
 │   ├── fabric-language-kotlin-1.3.X+build.X.jar (mandatory, for fabric only)
 │   ├── fabric-api-0.4.X+build.XXX-1.MV.jar (mandatory, for fabric only)
 │   └── Random-Teleport-1.MV.X-1.X.X.jar
