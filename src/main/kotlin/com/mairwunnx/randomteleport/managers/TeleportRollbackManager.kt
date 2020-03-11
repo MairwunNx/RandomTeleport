@@ -58,7 +58,7 @@ object TeleportRollbackManager {
      * Removes all expired timers for position
      * rollback.
      */
-    @UseExperimental(ExperimentalTime::class)
+    @OptIn(ExperimentalTime::class)
     private fun purgeAll() {
         logger.debug("Purging all expired location rollback entries")
         lastPosition.rowMap().keys.removeAll {

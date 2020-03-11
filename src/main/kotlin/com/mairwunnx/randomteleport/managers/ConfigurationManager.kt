@@ -14,10 +14,17 @@ object ConfigurationManager {
     private var configuration = ConfigurationModel()
     private val logger = LogManager.getLogger()
 
-    @UseExperimental(UnstableDefault::class)
+    @OptIn(UnstableDefault::class)
     private val jsonInstance = Json(
         JsonConfiguration(
-            strictMode = false, allowStructuredMapKeys = true, prettyPrint = true
+            encodeDefaults = true,
+            ignoreUnknownKeys = true,
+            isLenient = false,
+            serializeSpecialFloatingPointValues = false,
+            allowStructuredMapKeys = true,
+            prettyPrint = true,
+            unquotedPrint = false,
+            useArrayPolymorphism = false
         )
     )
 
