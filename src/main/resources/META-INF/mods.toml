@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/MairwunNx/RandomTeleport/issues"
 
 [[mods]]
     modId="random_teleport"
-    version="1.15.2-1.0.1"
+    version="1.15.2-1.1.0"
     displayName="Random Teleport"
     authors="MairwunNx (Pavel Erokhin)"
     updateJSONURL="https://raw.githubusercontent.com/MairwunNx/RandomTeleport/FORGE-1.15.2/update.json"

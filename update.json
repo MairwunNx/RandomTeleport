@@ -1,11 +1,12 @@
 {
   "homepage": "https://github.com/MairwunNx/RandomTeleport",
   "1.15.2": {
+    "1.15.2-1.1.0": "Changelog: https://github.com/MairwunNx/RandomTeleport/blob/FORGE-1.15.2/changelog.md#1152-110---2020-03-11",
     "1.15.2-1.0.1": "Changelog: https://github.com/MairwunNx/RandomTeleport/blob/FORGE-1.15.2/changelog.md#1152-101---2020-02-07",
     "1.15.2-1.0.0": "Changelog: https://github.com/MairwunNx/RandomTeleport/blob/FORGE-1.15.2/changelog.md#1152-100---2020-02-07"
   },
   "promos": {
-    "1.15.2-latest": "1.15.2-1.0.1",
-    "1.15.2-recommended": "1.15.2-1.0.1"
+    "1.15.2-latest": "1.15.2-1.1.0",
+    "1.15.2-recommended": "1.15.2-1.1.0"
   }
 }
