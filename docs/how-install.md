@@ -1,37 +1,22 @@
-# Installation instructions
+# Installation
 
-**If you have forge** then for start the modification, you need installed Forge, it is desirable that the version matches the supported versions. You can download Forge 1.14.4 from the [link](https://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.14.4.html) or Forge 1.15.2 from the [link](https://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.15.2.html).
+## Requirements
 
-**If you have fabric** then for start the modification, you need installed Fabric, it is desirable that the version matches the supported versions (1.14.4 or 1.15.2 or 20w06a (1.16)). You can download Fabric from the [link](https://fabricmc.net/use/) (click on **Vanilla**, select latest version and download .exe or .jar as executable file).
+Random Teleport runs on the Java edition of Minecraft, either on your single player/local game or a dedicated server.
 
-Move the downloaded mod to the `mods` folder (installation example below).
+At now Random Teleport supports Forge and Fabric, so you can install only on Forge and Fabric.
 
-**If you have forge 1.14.4** then you can install useful dependencies (without a mod, game can start, but I can recommend using it)
+### Basic requirements/recommendations for Forge version:
+1. For Minecraft `1.14.4` is Forge `28.2.X`.
+2. For Minecraft `1.15.2` is Forge `31.2.X`.
 
-**If you have fabric** then you NEED install mandatory dependencies (without a mod, game can't start)
+### Basic requirements/recommendations for Fabric version:
+1. Just use a latest version :).
 
-**Downloads for Forge 1.14.4 only**: [Cooldown](https://github.com/ProjectEssentials/ProjectEssentials-Cooldown) · [Permissions](https://github.com/ProjectEssentials/ProjectEssentials-Permissions)
-
-**Downloads for Fabric**: [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin/files) · [Fabric Api](https://www.curseforge.com/minecraft/mc-mods/fabric-api/files)
-
-```none
-const val MV = valueOf(your_minecraft_version)
-
-.
-├── assets
-├── config
-├── libraries
-├── mods (that's how it should be)
-│   ├── Project Essentials Cooldown-1.MV.X-1.X.X.jar (recommended, for forge only)
-│   ├── Project Essentials Permissions-1.MV.X-1.X.X.jar (recommended, for forge only)
-│   ├── fabric-language-kotlin-1.3.X+build.X.jar (mandatory, for fabric only)
-│   ├── fabric-api-0.4.X+build.XXX-1.MV.jar (mandatory, for fabric only)
-│   └── Random-Teleport-1.MV.X-1.X.X.jar
-└── ...
-```
-
-**Only for forge:** Now try to start the game, go to the `mods` tab, if this modification is displayed in the `mods` tab, then the mod has been successfully installed
-
-**Only for fabric:** For checking successfully installing mod, try execute any command, e.g `/rtp`, if you get any responce except `Command not found` then mod successfully installed.
+## Installing
+1. In your game/server root folder, create a `mods` folder if one does not yet exist.
+2. Download or copy `Random Teleport XXX-version.jar` into the `mods` folder.
+3. Don't forget install dependencies (for Fabric is [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin/files) and [Fabric Api](https://www.curseforge.com/minecraft/mc-mods/fabric-api/files)).
+4. Start your server or client.
 
 ## If you have any questions or encounter a problem, be sure to open an [issue](https://github.com/MairwunNx/RandomTeleport/issues/new/choose)
