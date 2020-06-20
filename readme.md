@@ -12,4 +12,4 @@
 
 [![image](assets/Telegram.png)](https://t.me/minecraftforge)
 
-[![image](assets/Support.png)](https://ko-fi.com/mairwunnx)
+[![image](assets/Support.png)](https://paypal.me/mairwunnx)
