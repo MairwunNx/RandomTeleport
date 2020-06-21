@@ -1,8 +1,8 @@
 package com.mairwunnx.randomteleport.commands
 
-import com.mairwunnx.randomteleport.EntryPoint
+import com.mairwunnx.randomteleport.EntryPoint.hasPermission
 import com.mairwunnx.randomteleport.configuration.TeleportStrategy.*
-import com.mairwunnx.randomteleport.managers.ConfigurationManager
+import com.mairwunnx.randomteleport.managers.ConfigurationManager.get
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
@@ -16,9 +16,7 @@ object BadLocationCommand {
     private val logger = LogManager.getLogger()
 
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        dispatcher.register(
-            CommandManager.literal("bad-location").executes(::execute)
-        )
+        dispatcher.register(CommandManager.literal("bad-location").executes(::execute))
     }
 
     private fun execute(context: CommandContext<ServerCommandSource>): Int {
@@ -27,17 +25,13 @@ object BadLocationCommand {
         val playerName = context.source.player.name.string
 
         if (isPlayer) {
-            if (!EntryPoint.hasPermission(player, 1)) {
+            if (!hasPermission(player, get().opLevelForRollBack)) {
                 context.source.sendFeedback(
-                    TranslatableText(
-                        "random_teleport.teleport.rollback_restricted"
-                    ), false
-                )
-                return 0
+                    TranslatableText("random_teleport.teleport.rollback_restricted"), false
+                ).let { return 0 }
             }
 
             val position = TeleportRollbackManager.requestPosition(playerName)
-
             if (position == null) {
                 context.source.sendFeedback(
                     TranslatableText(
@@ -46,47 +40,31 @@ object BadLocationCommand {
                 )
             } else {
                 context.source.sendFeedback(
-                    TranslatableText(
-                        "random_teleport.teleport.teleporting_back"
-                    ), false
+                    TranslatableText("random_teleport.teleport.teleporting_back"), false
                 )
 
-                when (ConfigurationManager.get().teleportStrategy) {
-                    USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT -> {
-                        player.teleport(
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock()
-                        )
-                    }
-                    SET_AND_UPDATE -> {
-                        player.setPositionAnglesAndUpdate(
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock(),
-                            player.yaw,
-                            player.pitch
-                        )
-                    }
-                    SET_POSITION -> {
-                        player.setPosition(
-                            position.x + getCenterPosBlock(),
-                            position.y + getCenterPosBlock(),
-                            position.z + getCenterPosBlock()
-                        )
-                    }
-                }
-
-                TeleportRollbackManager.removeEntry(playerName)
+                when (get().teleportStrategy) {
+                    USUALLY_TELEPORT, KEEP_LOADED, ATTEMPT_TELEPORT -> player.teleport(
+                        position.x + getCenterPosBlock(),
+                        position.y + getCenterPosBlock(),
+                        position.z + getCenterPosBlock()
+                    )
+                    SET_AND_UPDATE -> player.updatePositionAndAngles(
+                        position.x + getCenterPosBlock(),
+                        position.y + getCenterPosBlock(),
+                        position.z + getCenterPosBlock(),
+                        player.yaw, player.pitch
+                    )
+                    SET_POSITION -> player.updatePosition(
+                        position.x + getCenterPosBlock(),
+                        position.y + getCenterPosBlock(),
+                        position.z + getCenterPosBlock()
+                    )
+                }.also { TeleportRollbackManager.removeEntry(playerName) }
             }
-
             return 0
-        } else {
-            logger.info("Unable to use this command. Only player can execute this command.")
-            return 0
-        }
+        } else logger.info("Only player can execute this command.").let { return 0 }
     }
 
-    private fun getCenterPosBlock(): Double =
-        if (ConfigurationManager.get().teleportOnCenterBlock) 0.5 else 0.0
+    private fun getCenterPosBlock() = if (get().teleportOnCenterBlock) 0.5 else 0.0
 }
