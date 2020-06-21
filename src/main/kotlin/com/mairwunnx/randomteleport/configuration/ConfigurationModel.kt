@@ -10,5 +10,7 @@ data class ConfigurationModel(
     var teleportStrategy: TeleportStrategy = TeleportStrategy.USUALLY_TELEPORT,
     var teleportOnCenterBlock: Boolean = true,
     var locationRollBackTimer: Int = 10,
-    var minRandomTeleportRadius: Int = 30
+    var minRandomTeleportRadius: Int = 30,
+    var opLevelForRollBack: Int = 1,
+    var opLevelForRandomTeleport: Int = 1
 )

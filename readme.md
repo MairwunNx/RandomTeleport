@@ -12,4 +12,4 @@
 
 [![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Telegram.png)](https://t.me/minecraftforge)
 
-[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Support.png)](https://ko-fi.com/mairwunnx)
+[![image](https://github.com/MairwunNx/RandomTeleport/raw/master/assets/Support.png)](https://paypal.me/mairwunnx)

@@ -13,24 +13,19 @@ object EntryPoint : ModInitializer {
     private val logger = LogManager.getLogger()
 
     init {
-        logger.info("Random Teleport mod initializing")
-        ConfigurationManager.load()
+        logger.info("Random Teleport mod initializing").also { ConfigurationManager.load() }
     }
 
-    override fun onInitialize() {
+    override fun onInitialize() =
         ServerStartCallback.EVENT.register(ServerStartCallback {
             logger.info("Commands registering starting for Random Teleport")
             RandomTeleportCommand.register(it.commandManager.dispatcher)
             BadLocationCommand.register(it.commandManager.dispatcher)
-        })
+        }).also {
+            ServerStopCallback.EVENT.register(ServerStopCallback { ConfigurationManager.save() })
+        }
 
-        ServerStopCallback.EVENT.register(ServerStopCallback {
-            ConfigurationManager.save()
-        })
-    }
-
-    internal fun hasPermission(
-        player: ServerPlayerEntity,
-        opLevel: Int
-    ): Boolean = player.server.opPermissionLevel >= opLevel
+    fun hasPermission(
+        player: ServerPlayerEntity, opLevel: Int
+    ) = player.server.opPermissionLevel >= opLevel
 }
