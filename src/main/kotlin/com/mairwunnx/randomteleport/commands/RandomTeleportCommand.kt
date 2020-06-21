@@ -3,7 +3,7 @@
 package com.mairwunnx.randomteleport.commands
 
 import com.mairwunnx.randomteleport.EntryPoint
-import com.mairwunnx.randomteleport.Position
+import com.mairwunnx.randomteleport.structs.Position
 import com.mairwunnx.randomteleport.configuration.TeleportStrategy.*
 import com.mairwunnx.randomteleport.managers.ConfigurationManager
 import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
@@ -28,13 +28,10 @@ import java.util.*
 object RandomTeleportCommand {
     private val logger = LogManager.getLogger()
     private val random = Random()
-    private val minRange
-        get() = ConfigurationManager.get().minRandomTeleportRadius
+    private val minRange get() = ConfigurationManager.get().minRandomTeleportRadius
     private val aliases = arrayOf(
-        "random-teleport", "randomteleport",
-        "random-tp", "randomtp",
-        "rnd-tp", "rndtp",
-        "rtp", "tpr"
+        "random-teleport", "randomteleport", "random-tp",
+        "randomtp", "rnd-tp", "rndtp", "rtp", "tpr"
     )
 
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
@@ -144,7 +141,11 @@ object RandomTeleportCommand {
         byOther: Boolean = false,
         otherName: String = ""
     ) {
-        val position = Position(player.blockPos.x, player.blockPos.y, player.blockPos.z)
+        val position = Position(
+            player.blockPos.x,
+            player.blockPos.y,
+            player.blockPos.z
+        )
         val world = player.serverWorld
         var newPosition: Position? = null
         var locationFound = false
@@ -178,7 +179,11 @@ object RandomTeleportCommand {
             val pair = isSafeLocation(world, anewPosition)
             if (pair.first) {
                 locationFound = true
-                newPosition = Position(anewPosition.x, pair.second, anewPosition.z)
+                newPosition = Position(
+                    anewPosition.x,
+                    pair.second,
+                    anewPosition.z
+                )
                 return@repeat
             }
         }
@@ -271,7 +276,11 @@ object RandomTeleportCommand {
             position.z - randomForZ
         }
 
-        return Position(randomX, 256, randomZ)
+        return Position(
+            randomX,
+            256,
+            randomZ
+        )
     }
 
     private fun isSafeLocation(world: ServerWorld, position: Position): Pair<Boolean, Int> {

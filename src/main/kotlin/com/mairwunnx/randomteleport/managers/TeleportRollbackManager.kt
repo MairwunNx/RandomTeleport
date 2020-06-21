@@ -1,12 +1,11 @@
 package com.mairwunnx.randomteleport.managers
 
 import com.google.common.collect.HashBasedTable
-import com.mairwunnx.randomteleport.Position
+import com.mairwunnx.randomteleport.structs.Position
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.ZonedDateTime
-import kotlin.time.ExperimentalTime
-import kotlin.time.toKotlinDuration
+import java.time.ZonedDateTime.now
 
 object TeleportRollbackManager {
     private val logger = LogManager.getLogger()
@@ -20,15 +19,12 @@ object TeleportRollbackManager {
      */
     fun commitPosition(playerName: String, position: Position) {
         logger.debug("Position $position committing for $playerName")
-        purgeAll()
-        removeEntry(playerName)
-        lastPosition.put(playerName, position, ZonedDateTime.now())
+        purgeAll().also { removeEntry(playerName) }
+        lastPosition.put(playerName, position, now())
     }
 
     fun removeEntry(playerName: String) {
-        if (lastPosition.containsRow(playerName)) {
-            lastPosition.rowMap().remove(playerName)
-        }
+        if (lastPosition.containsRow(playerName)) lastPosition.rowMap().remove(playerName)
     }
 
     /**
@@ -39,42 +35,28 @@ object TeleportRollbackManager {
      * not exist last position for player.
      */
     fun requestPosition(playerName: String): Position? {
-        val pos by lazy {
-            lastPosition.rowMap().getValue(playerName).keys.first()
-        }
-
-        logger.debug("Requesting old position for $playerName")
-        purgeAll()
-
+        val pos by lazy { lastPosition.rowMap().getValue(playerName).keys.first() }
+        logger.debug("Requesting old position for $playerName").also { purgeAll() }
         return try {
-            logger.debug("Position taken for $playerName: $pos")
-            pos
+            logger.debug("Position taken for $playerName: $pos").let { pos }
         } catch (ex: NoSuchElementException) {
             null
         }
     }
 
     /**
-     * Removes all expired timers for position
-     * rollback.
+     * Removes all expired timers for position rollback.
      */
-    @UseExperimental(ExperimentalTime::class)
     private fun purgeAll() {
         logger.debug("Purging all expired location rollback entries")
         lastPosition.rowMap().keys.removeAll {
             val pos = lastPosition.rowMap().getValue(it).keys.first()
-            val commitTime = lastPosition[it, pos]
-            val timeNow = ZonedDateTime.now()
-            val duration = Duration.between(commitTime, timeNow)
-            val passedSeconds = duration.toKotlinDuration().inSeconds
-
-            if (passedSeconds >= getTimeOut()) {
-                logger.debug("Expired entry removed for $it")
-                return@removeAll true
+            if (Duration.between(lastPosition[it, pos], now()).seconds >= getTimeOut()) {
+                logger.debug("Expired entry removed for $it").let { true }
             }
             return@removeAll false
         }
     }
 
-    private fun getTimeOut(): Int = ConfigurationManager.get().locationRollBackTimer
+    private fun getTimeOut() = ConfigurationManager.get().locationRollBackTimer
 }
