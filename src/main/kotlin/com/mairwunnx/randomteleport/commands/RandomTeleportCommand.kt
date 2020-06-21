@@ -9,8 +9,8 @@ import com.mairwunnx.randomteleport.managers.TeleportRollbackManager
 import com.mairwunnx.randomteleport.structs.Position
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.block.BedrockBlock
 import net.minecraft.block.BlockState
+import net.minecraft.block.Blocks
 import net.minecraft.block.MagmaBlock
 import net.minecraft.block.Material
 import net.minecraft.command.arguments.EntityArgumentType
@@ -122,8 +122,8 @@ object RandomTeleportCommand {
         var newPosition: Position? = null
         var locationFound = false
         val justInCaseComponent = TranslatableText("random_teleport.teleport.just_in_case")
-        justInCaseComponent.style.clickEvent = ClickEvent(
-            ClickEvent.Action.RUN_COMMAND, "/bad-location"
+        justInCaseComponent.style = justInCaseComponent.style.withClickEvent(
+            ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bad-location")
         )
 
         if (byOther) {
@@ -204,7 +204,7 @@ object RandomTeleportCommand {
     }
 
     private fun isSafeLocation(world: ServerWorld, position: Position): Pair<Boolean, Int> {
-        if (!world.dimension.isNether) {
+        if (!world.dimension.isShrunk) {
             val heightTop = getTopY(world, BlockPos(position.x, 257, position.z))
             val blockPos = BlockPos(position.x, heightTop, position.z)
             val blockState: BlockState = world.getBlockState(blockPos)
@@ -223,7 +223,10 @@ object RandomTeleportCommand {
                 ) {
                     val material = blockState.material
                     return Pair(
-                        !material.isLiquid && material != Material.FIRE && blockState.block !is MagmaBlock && blockState.block !is BedrockBlock,
+                        !material.isLiquid
+                                && material != Material.FIRE
+                                && blockState.block !is MagmaBlock
+                                && !blockState.block.`is`(Blocks.BEDROCK),
                         blockPos.y + 1
                     )
                 }
