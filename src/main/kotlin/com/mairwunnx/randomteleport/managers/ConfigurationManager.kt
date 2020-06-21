@@ -14,35 +14,36 @@ object ConfigurationManager {
     private var configuration = ConfigurationModel()
     private val logger = LogManager.getLogger()
 
-    @UseExperimental(UnstableDefault::class)
+    @OptIn(UnstableDefault::class)
     private val jsonInstance = Json(
         JsonConfiguration(
-            strictMode = false, allowStructuredMapKeys = true, prettyPrint = true
+            encodeDefaults = true,
+            ignoreUnknownKeys = true,
+            isLenient = false,
+            serializeSpecialFloatingPointValues = false,
+            allowStructuredMapKeys = true,
+            prettyPrint = true,
+            unquotedPrint = false,
+            useArrayPolymorphism = false
         )
     )
 
     fun load() {
-        logger.info("Loading random teleport configuration")
-        if (!File(configurationPath).exists()) {
-            logger.warn("Random teleport config not exist! creating it now!")
-            File(configurationDir).mkdirs()
-            val defaultConfig = jsonInstance.stringify(
-                ConfigurationModel.serializer(), configuration
-            )
-            File(configurationPath).writeText(defaultConfig)
-        }
-        configuration = jsonInstance.parse(
-            ConfigurationModel.serializer(), File(configurationPath).readText()
-        )
+        logger.info("Loading random teleport configuration").also {
+            if (File(configurationPath).exists()) {
+                configuration = jsonInstance.parse(
+                    ConfigurationModel.serializer(), File(configurationPath).readText()
+                ); return
+            }
+        }.also { logger.warn("Random teleport config not exist! Will used default!") }
     }
 
     fun save() {
         logger.info("Saving random teleport configuration")
-        File(configurationDir).mkdirs()
         val configurationRaw = jsonInstance.stringify(
             ConfigurationModel.serializer(), configuration
         )
-        File(configurationPath).writeText(configurationRaw)
+        File(configurationPath).apply { mkdirs().also { writeText(configurationRaw) } }
     }
 
     fun get() = configuration
